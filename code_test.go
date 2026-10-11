@@ -72,19 +72,14 @@ func TestGenDiffJSON(t *testing.T) {
 			require.NoError(t, err)
 			require.True(t, json.Valid([]byte(got)))
 
-			var tree []map[string]any
+			var tree map[string]map[string]any
 			require.NoError(t, json.Unmarshal([]byte(got), &tree))
 
-			// верхний уровень отсортирован: common, group1, group2, group3
-			keys := make([]string, 0, len(tree))
-			for _, n := range tree {
-				keys = append(keys, n["key"].(string))
-			}
-			require.Equal(t, []string{"common", "group1", "group2", "group3"}, keys)
-
-			require.Equal(t, "nested", tree[0]["status"])
-			require.Equal(t, "removed", tree[2]["status"])
-			require.Equal(t, "added", tree[3]["status"])
+			require.Len(t, tree, 4)
+			require.Equal(t, "nested", tree["common"]["status"])
+			require.Equal(t, "nested", tree["group1"]["status"])
+			require.Equal(t, "removed", tree["group2"]["status"])
+			require.Equal(t, "added", tree["group3"]["status"])
 		})
 	}
 }
@@ -93,16 +88,14 @@ func TestGenDiffJSONKeepsNull(t *testing.T) {
 	got, err := code.GenDiff(fixture("nested1.json"), fixture("nested2.json"), "json")
 	require.NoError(t, err)
 
-	var tree []map[string]any
+	var tree map[string]map[string]any
 	require.NoError(t, json.Unmarshal([]byte(got), &tree))
 
-	var setting3 map[string]any
-	for _, c := range tree[0]["children"].([]any) {
-		if m := c.(map[string]any); m["key"] == "setting3" {
-			setting3 = m
-		}
-	}
-	require.NotNil(t, setting3)
+	children, ok := tree["common"]["children"].(map[string]any)
+	require.True(t, ok)
+	setting3, ok := children["setting3"].(map[string]any)
+	require.True(t, ok)
+
 	require.Equal(t, "updated", setting3["status"])
 	require.Equal(t, true, setting3["oldValue"])
 	require.Contains(t, setting3, "newValue") // ключ есть, значение null

@@ -14,13 +14,10 @@ func JSON(nodes []diff.Node) (string, error) {
 	return string(out), nil
 }
 
-func toJSONNodes(nodes []diff.Node) []map[string]any {
-	result := make([]map[string]any, 0, len(nodes))
+func toJSONNodes(nodes []diff.Node) map[string]any {
+	result := make(map[string]any, len(nodes))
 	for _, n := range nodes {
-		m := map[string]any{
-			"key":    n.Key,
-			"status": string(n.Status),
-		}
+		m := map[string]any{"status": string(n.Status)}
 		switch n.Status {
 		case diff.Added:
 			m["value"] = n.NewValue
@@ -32,7 +29,7 @@ func toJSONNodes(nodes []diff.Node) []map[string]any {
 		case diff.Nested:
 			m["children"] = toJSONNodes(n.Children)
 		}
-		result = append(result, m)
+		result[n.Key] = m
 	}
 	return result
 }
