@@ -18,11 +18,29 @@
 ```bash
 git clone https://github.com/e950753/go-project-244.git
 cd go-project-244
+make build
 ```
 
 ## Использование
 
 <!-- Добавьте примеры запуска и запись asciinema — именно это смотрит работодатель -->
+
+```bash
+./bin/gendiff --help
+./bin/gendiff [--format stylish|plain|json] filepath1 filepath2
+```
+
+Структура проекта:
+
+- `cmd/gendiff` — CLI
+- `diff` — построение дерева различий
+- `parsers` — разбор файлов
+- `formatters` — форматеры вывода
+- `testdata/fixture` — фикстуры для тестов
+
+---
+
+[![asciicast](https://asciinema.org/a/296FmAZ7B5V5Elaj.svg)](https://asciinema.org/a/296FmAZ7B5V5Elaj)
 
 ---
 
