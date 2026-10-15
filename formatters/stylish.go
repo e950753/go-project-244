@@ -10,6 +10,7 @@ import (
 
 const indentSize = 4
 
+// отображает дерево различий в виде вложенных блоков с префиксами +, - и пробелом
 func Stylish(nodes []diff.Node) string {
 	return renderNodes(nodes, 1)
 }

@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+// отображает дерево различий в виде списка строк вида
 func Plain(nodes []diff.Node) string {
 	return strings.Join(plainLines(nodes, ""), "\n")
 }

@@ -1,7 +1,6 @@
 package code_test
 
 import (
-	"code"
 	"encoding/json"
 	"os"
 	"path/filepath"
@@ -9,6 +8,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"code"
 )
 
 func fixture(name string) string {
@@ -31,7 +32,7 @@ func TestGenDiff(t *testing.T) {
 		{"default format", "nested1.json", "nested2.json", "", "result_stylish.txt"},
 		{"json plain", "nested1.json", "nested2.json", "plain", "result_plain.txt"},
 		{"yaml plain", "nested1.yml", "nested2.yml", "plain", "result_plain.txt"},
-		{"mixed json+yaml", "nested1.json", "nested2.yml", "plain", "result_plain.txt"},
+		{"mixed json and yaml", "nested1.json", "nested2.yml", "plain", "result_plain.txt"},
 	}
 
 	for _, tt := range tests {
@@ -55,7 +56,7 @@ func TestGenDiffErrors(t *testing.T) {
 	require.Error(t, err)
 
 	_, err = code.GenDiff(fixture("result_plain.txt"), fixture("nested2.json"), "stylish")
-	require.Error(t, err)
+	require.Error(t, err) // неподдерживаемое расширение
 
 	_, err = code.GenDiff(fixture("nested1.json"), fixture("nested2.json"), "xml")
 	require.Error(t, err)
@@ -98,6 +99,6 @@ func TestGenDiffJSONKeepsNull(t *testing.T) {
 
 	require.Equal(t, "updated", setting3["status"])
 	require.Equal(t, true, setting3["oldValue"])
-	require.Contains(t, setting3, "newValue") // ключ есть, значение null
+	require.Contains(t, setting3, "newValue")
 	require.Nil(t, setting3["newValue"])
 }

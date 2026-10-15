@@ -1,3 +1,4 @@
+// Package diff строит дерево различий между двумя структурами данных, форматирование в него не входит
 package diff
 
 import (
@@ -6,24 +7,38 @@ import (
 	"slices"
 )
 
+// Status описывает, как изменился ключ между двумя структурами
 type Status string
 
 const (
-	Added     Status = "added"
-	Removed   Status = "removed"
+	// Added означает, что ключ есть только во второй структуре
+	Added Status = "added"
+	// Removed означает, что ключ есть только в первой структуре
+	Removed Status = "removed"
+	// Unchanged означает, что ключ есть в обеих структурах, значения равны
 	Unchanged Status = "unchanged"
-	Updated   Status = "updated"
-	Nested    Status = "nested"
+	// Updated означает, что ключ есть в обеих структурах, значения различаются
+	Updated Status = "updated"
+	// Nested означает, что в обеих структурах по ключу лежит объект, различия в Children
+	Nested Status = "nested"
 )
 
+// Node описывает различие для одного ключа
 type Node struct {
-	Key      string
-	Status   Status
+	// Key - имя ключа
+	Key string
+	// Status - вид изменения
+	Status Status
+	// OldValue - значение из первой структуры (Removed, Unchanged, Updated)
 	OldValue any
+	// NewValue - значение из второй структуры (Added, Unchanged, Updated)
 	NewValue any
+	// Children - различия вложенных объектов (только для Nested)
 	Children []Node
 }
 
+// Build вычисляет различия между a и b, узлы отсортированы по ключу,
+// дети строятся только если в обеих структурах по ключу лежит объект
 func Build(a, b map[string]any) []Node {
 	keys := make(map[string]struct{}, len(a)+len(b))
 	for k := range a {
